@@ -1,0 +1,13 @@
+{
+  "pages": [
+    "pages/index/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "家政工资",
+    "navigationBarBackgroundColor": "#f8faf7",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f8faf7"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

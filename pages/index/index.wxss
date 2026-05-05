@@ -1,0 +1,385 @@
+.page {
+  min-height: 100vh;
+  padding: 32rpx 28rpx 0;
+}
+
+.topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24rpx;
+}
+
+.title {
+  font-size: 42rpx;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.subtitle {
+  margin-top: 8rpx;
+  color: #6b7280;
+  font-size: 24rpx;
+}
+
+.salary-box {
+  width: 184rpx;
+  padding: 14rpx 16rpx;
+  border: 1rpx solid #d7ded2;
+  border-radius: 8rpx;
+  background: #ffffff;
+}
+
+.salary-box.compact {
+  flex: 0 0 184rpx;
+}
+
+.salary-label {
+  display: block;
+  color: #667085;
+  font-size: 22rpx;
+}
+
+.salary-input {
+  width: 100%;
+  height: 52rpx;
+  margin-top: 2rpx;
+  color: #1f2933;
+  font-size: 34rpx;
+  font-weight: 700;
+}
+
+.rule-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16rpx;
+  margin-top: 22rpx;
+}
+
+.rule-box {
+  padding: 14rpx 16rpx;
+  border: 1rpx solid #d7ded2;
+  border-radius: 8rpx;
+  background: #ffffff;
+}
+
+.rule-input {
+  width: 100%;
+  height: 50rpx;
+  margin-top: 2rpx;
+  color: #1f2933;
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.month-row {
+  display: grid;
+  grid-template-columns: 72rpx 1fr 72rpx;
+  align-items: center;
+  column-gap: 18rpx;
+  margin: 34rpx 0 18rpx;
+}
+
+.icon-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 8rpx;
+  color: #2f3b2f;
+  font-size: 48rpx;
+  font-weight: 700;
+  background: #e7efe2;
+}
+
+.month-name {
+  min-width: 0;
+  text-align: center;
+  font-size: 32rpx;
+  font-weight: 700;
+  line-height: 72rpx;
+  white-space: nowrap;
+}
+
+.calendar {
+  overflow: hidden;
+  border: 1rpx solid #dbe3d7;
+  border-radius: 8rpx;
+  background: #ffffff;
+}
+
+.weekdays,
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.weekdays {
+  border-bottom: 1rpx solid #e6ece2;
+  background: #f2f6ef;
+}
+
+.weekdays text {
+  padding: 18rpx 0;
+  text-align: center;
+  color: #667085;
+  font-size: 22rpx;
+}
+
+.day {
+  position: relative;
+  height: 108rpx;
+  padding: 14rpx 8rpx 10rpx;
+  border-right: 1rpx solid #edf1eb;
+  border-bottom: 1rpx solid #edf1eb;
+  text-align: center;
+  background: #ffffff;
+}
+
+.day:nth-child(7n) {
+  border-right: 0;
+}
+
+.day-number {
+  display: block;
+  color: #28312a;
+  font-size: 28rpx;
+  font-weight: 650;
+}
+
+.day-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 54rpx;
+  height: 30rpx;
+  margin-top: 10rpx;
+  padding: 0 8rpx;
+  border-radius: 6rpx;
+  color: #ffffff;
+  font-size: 18rpx;
+  font-weight: 700;
+}
+
+.day-tag.empty {
+  color: #98a2b3;
+  background: #eef2ee;
+}
+
+.day.work {
+  background: #f0f8ee;
+}
+
+.day.work .day-tag {
+  background: #458a43;
+}
+
+.day.paid {
+  background: #fff6df;
+}
+
+.day.paid .day-tag {
+  background: #c47518;
+}
+
+.day.off {
+  background: #fbfcfb;
+}
+
+.day.off .day-tag {
+  color: #7a8699;
+  background: #eef2ee;
+}
+
+.day.muted {
+  background: #f6f8f5;
+}
+
+.day.muted .day-number {
+  color: #b7c0b3;
+}
+
+.day.selected {
+  outline: 4rpx solid #2f6f43;
+  outline-offset: -4rpx;
+  z-index: 1;
+}
+
+.editor {
+  margin-top: 24rpx;
+  padding: 24rpx;
+  border: 1rpx solid #dbe3d7;
+  border-radius: 8rpx;
+  background: #ffffff;
+}
+
+.editor-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.editor-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.editor-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.editor-subtitle {
+  margin-top: 8rpx;
+  color: #667085;
+  font-size: 24rpx;
+}
+
+.clear-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 160rpx;
+  width: 160rpx;
+  height: 56rpx;
+  border: 1rpx solid #d0d8ca;
+  border-radius: 8rpx;
+  color: #475467;
+  font-size: 24rpx;
+  font-weight: 650;
+  background: #f8faf7;
+}
+
+.status-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14rpx;
+  margin-top: 24rpx;
+}
+
+.status-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 76rpx;
+  border: 1rpx solid #d4dccf;
+  border-radius: 8rpx;
+  color: #334155;
+  font-size: 28rpx;
+  font-weight: 650;
+  background: #f8faf7;
+}
+
+.status-tab.active.work {
+  border-color: #458a43;
+  color: #ffffff;
+  background: #458a43;
+}
+
+.status-tab.active.paid {
+  border-color: #c47518;
+  color: #ffffff;
+  background: #c47518;
+}
+
+.status-tab.active.off {
+  border-color: #7a8699;
+  color: #ffffff;
+  background: #7a8699;
+}
+
+.work-duration {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  margin-top: 22rpx;
+}
+
+.setting-label {
+  flex: 0 0 auto;
+  color: #334155;
+  font-size: 28rpx;
+}
+
+.duration-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, 128rpx);
+  gap: 12rpx;
+}
+
+.duration-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 64rpx;
+  border: 1rpx solid #d4dccf;
+  border-radius: 8rpx;
+  color: #334155;
+  font-size: 26rpx;
+  font-weight: 650;
+  background: #f8faf7;
+}
+
+.duration-tab.active {
+  border-color: #458a43;
+  color: #ffffff;
+  background: #458a43;
+}
+
+.multiplier-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  margin-top: 22rpx;
+}
+
+.multiplier-input {
+  width: 190rpx;
+  height: 68rpx;
+  padding: 0 18rpx;
+  border: 1rpx solid #d0d8ca;
+  border-radius: 8rpx;
+  text-align: right;
+  font-size: 30rpx;
+  background: #f8faf7;
+}
+
+.summary-spacer {
+  height: 176rpx;
+}
+
+.summary {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22rpx 28rpx calc(22rpx + env(safe-area-inset-bottom));
+  border-top: 1rpx solid #d8e0d3;
+  background: #ffffff;
+  box-shadow: 0 -12rpx 30rpx rgba(31, 41, 51, 0.08);
+}
+
+.summary-label {
+  font-size: 26rpx;
+  font-weight: 700;
+}
+
+.summary-detail {
+  margin-top: 6rpx;
+  color: #667085;
+  font-size: 22rpx;
+}
+
+.summary-amount {
+  color: #245c36;
+  font-size: 46rpx;
+  font-weight: 800;
+}

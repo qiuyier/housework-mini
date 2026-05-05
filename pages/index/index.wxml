@@ -1,0 +1,86 @@
+<view class="page">
+  <view class="topbar">
+    <view>
+      <view class="title">本月工资</view>
+      <view class="subtitle">{{monthLabel}} · {{workDays}} 天上班 · {{paidDays}} 天带薪</view>
+    </view>
+    <view class="salary-box compact">
+      <text class="salary-label">日薪</text>
+      <input class="salary-input" type="digit" value="{{dailySalary}}" placeholder="0" bindinput="onSalaryInput" />
+    </view>
+  </view>
+
+  <view class="rule-row">
+    <view class="rule-box">
+      <text class="salary-label">应上天数</text>
+      <input class="rule-input" type="digit" value="{{expectedWorkDays}}" placeholder="26" bindinput="onExpectedWorkDaysInput" />
+    </view>
+    <view class="rule-box">
+      <text class="salary-label">满勤工资</text>
+      <input class="rule-input" type="digit" value="{{fullMonthSalary}}" placeholder="7500" bindinput="onFullMonthSalaryInput" />
+    </view>
+  </view>
+
+  <view class="month-row">
+    <view class="icon-button" role="button" aria-label="上个月" bindtap="goPrevMonth">‹</view>
+    <view class="month-name">{{monthLabel}}</view>
+    <view class="icon-button" role="button" aria-label="下个月" bindtap="goNextMonth">›</view>
+  </view>
+
+  <view class="calendar">
+    <view class="weekdays">
+      <text wx:for="{{weekdays}}" wx:key="*this">{{item}}</text>
+    </view>
+    <view class="days">
+      <view
+        wx:for="{{calendarDays}}"
+        wx:key="key"
+        class="day {{item.isCurrentMonth ? '' : 'muted'}} {{item.date === selectedDate ? 'selected' : ''}} {{item.record.type}}"
+        data-date="{{item.date}}"
+        bindtap="selectDate"
+      >
+        <text class="day-number">{{item.day}}</text>
+        <text wx:if="{{item.record.label}}" class="day-tag">{{item.record.label}}</text>
+        <text wx:else class="day-tag empty">休</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="editor" wx:if="{{selectedDate}}">
+    <view class="editor-head">
+      <view class="editor-copy">
+        <view class="editor-title">{{selectedDateLabel}}</view>
+        <view class="editor-subtitle">{{selectedAmountLabel}}</view>
+      </view>
+      <view class="clear-button" role="button" bindtap="clearSelectedDate">清空</view>
+    </view>
+
+    <view class="status-tabs">
+      <view class="status-tab {{selectedRecord.type === 'work' ? 'active work' : ''}}" role="button" data-type="work" bindtap="setSelectedType">上班</view>
+      <view class="status-tab {{selectedRecord.type === 'paid' ? 'active paid' : ''}}" role="button" data-type="paid" bindtap="setSelectedType">带薪</view>
+      <view class="status-tab {{selectedRecord.type === 'off' ? 'active off' : ''}}" role="button" data-type="off" bindtap="setSelectedType">不上班</view>
+    </view>
+
+    <view class="work-duration" wx:if="{{selectedRecord.type === 'work'}}">
+      <text class="setting-label">上班时长</text>
+      <view class="duration-tabs">
+        <view class="duration-tab {{selectedRecord.multiplier === '0.5' ? 'active' : ''}}" role="button" data-multiplier="0.5" bindtap="setWorkMultiplier">半天</view>
+        <view class="duration-tab {{selectedRecord.multiplier === '1' ? 'active' : ''}}" role="button" data-multiplier="1" bindtap="setWorkMultiplier">全天</view>
+      </view>
+    </view>
+
+    <view class="multiplier-row" wx:if="{{selectedRecord.type === 'paid'}}">
+      <text class="setting-label">带薪倍数</text>
+      <input class="multiplier-input" type="digit" value="{{selectedRecord.multiplier}}" placeholder="例如 2" bindinput="onMultiplierInput" />
+    </view>
+  </view>
+
+  <view class="summary-spacer"></view>
+  <view class="summary">
+    <view>
+      <view class="summary-label">本月合计</view>
+      <view class="summary-detail">{{summaryModeLabel}}</view>
+    </view>
+    <view class="summary-amount">¥{{monthTotal}}</view>
+  </view>
+</view>
