@@ -31,18 +31,35 @@ Page({
     }
   },
 
-  onLoad() {
+  onLoad(options = {}) {
     const today = new Date()
     const state = this.loadState()
+    const sharedMonth = this.parseSharedMonth(options)
 
     this.setData({
       state,
       dailySalary: state.dailySalary || '',
-      currentYear: today.getFullYear(),
-      currentMonth: today.getMonth() + 1
+      currentYear: sharedMonth.year || today.getFullYear(),
+      currentMonth: sharedMonth.month || today.getMonth() + 1
     }, () => {
       this.refreshMonth()
     })
+
+    this.showShareMenu()
+  },
+
+  onShareAppMessage() {
+    return {
+      title: '家政工资计算器',
+      path: this.getSharePath()
+    }
+  },
+
+  onShareTimeline() {
+    return {
+      title: '家政工资计算器',
+      query: this.getShareQuery()
+    }
   },
 
   loadState() {
@@ -61,6 +78,17 @@ Page({
       months: saved.months || {},
       monthRules: saved.monthRules || {}
     }
+  },
+
+  showShareMenu() {
+    if (!wx.showShareMenu) {
+      return
+    }
+
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    })
   },
 
   saveState(nextState) {
@@ -407,6 +435,35 @@ Page({
 
   getPaidMultiplier(record) {
     return record.type === 'paid' ? record.multiplier || 2 : 2
+  },
+
+  getSharePath() {
+    const query = this.getShareQuery()
+    return query ? `/pages/index/index?${query}` : '/pages/index/index'
+  },
+
+  getShareQuery() {
+    const { currentYear, currentMonth } = this.data
+
+    if (!currentYear || !currentMonth) {
+      return ''
+    }
+
+    return `year=${currentYear}&month=${currentMonth}`
+  },
+
+  parseSharedMonth(options) {
+    const year = Number(options.year)
+    const month = Number(options.month)
+
+    if (!Number.isInteger(year) || !Number.isInteger(month) || year < 1900 || month < 1 || month > 12) {
+      return {}
+    }
+
+    return {
+      year,
+      month
+    }
   },
 
   formatDateLabel(dateText) {

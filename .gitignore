@@ -1,0 +1,8 @@
+.idea/
+
+# WeChat DevTools local config
+project.private.config.json
+
+# OS / editor noise
+.DS_Store
+Thumbs.db

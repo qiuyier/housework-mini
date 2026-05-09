@@ -1,3 +1,5 @@
 {
-  "navigationBarTitleText": "家政工资"
+  "navigationBarTitleText": "家政工资",
+  "enableShareAppMessage": true,
+  "enableShareTimeline": true
 }
