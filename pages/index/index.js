@@ -22,6 +22,8 @@ Page({
     expectedWorkDays: '',
     fullMonthSalary: '',
     summaryModeLabel: '按当前日薪实时计算',
+    workProgressPercent: 0,
+    workProgressLabel: '满勤规则未设置',
     workDays: 0,
     paidDays: 0,
     state: {
@@ -288,6 +290,8 @@ Page({
       expectedWorkDays: monthRule.expectedWorkDays,
       fullMonthSalary: monthRule.fullMonthSalary,
       summaryModeLabel: totals.modeLabel,
+      workProgressPercent: this.getWorkProgressPercent(totals.workDays, monthRule.expectedWorkDays),
+      workProgressLabel: this.getWorkProgressLabel(totals.workDays, monthRule),
       workDays: totals.workDays,
       paidDays: totals.paidDays
     })
@@ -419,6 +423,36 @@ Page({
 
   getDayAmountLabel(record) {
     return `当天工资 ¥${this.formatMoney(this.calculateRecordAmount(record))}`
+  },
+
+  getWorkProgressPercent(workDays, expectedWorkDays) {
+    const expected = Number(expectedWorkDays) || 0
+
+    if (!expected) {
+      return 0
+    }
+
+    return Math.min(100, Math.max(0, Math.round((Number(workDays) / expected) * 100)))
+  },
+
+  getWorkProgressLabel(workDays, monthRule) {
+    const expected = Number(monthRule.expectedWorkDays) || 0
+
+    if (!expected) {
+      return '满勤规则未设置'
+    }
+
+    const diff = Number(workDays) - expected
+
+    if (diff === 0) {
+      return '已达满勤'
+    }
+
+    if (diff > 0) {
+      return `已超 ${this.formatMoney(diff)} 天`
+    }
+
+    return `还差 ${this.formatMoney(Math.abs(diff))} 天`
   },
 
   getNormalizedRecordMultiplier(record) {
