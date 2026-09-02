@@ -4,7 +4,10 @@
       <view class="hero-copy">
         <view class="eyebrow">月度工资台账</view>
         <view class="title">本月工资</view>
-        <view class="subtitle">{{monthLabel}} · {{workDays}} 天上班 · {{paidDays}} 天带薪</view>
+        <view class="subtitle">
+          <text>{{monthLabel}} · {{workDays}} 天上班 · {{paidDays}} 天带薪</text>
+          <text wx:if="{{compDays}}"> · {{compDays}} 天调休</text>
+        </view>
       </view>
       <view class="hero-total">
         <text class="hero-currency">¥</text>
@@ -32,8 +35,12 @@
         <text class="stat-label">带薪天数</text>
       </view>
       <view class="stat-item">
-        <text class="stat-value">{{workProgressPercent}}%</text>
-        <text class="stat-label">满勤比例</text>
+        <text class="stat-value">+{{bankedDays}}</text>
+        <text class="stat-label">本月攒假</text>
+      </view>
+      <view class="stat-item stat-leave">
+        <text class="stat-value">{{leaveBalance}}</text>
+        <text class="stat-label">调休余额</text>
       </view>
     </view>
   </view>
@@ -111,6 +118,29 @@
         </view>
       </view>
 
+      <view class="leave-section">
+        <view class="leave-section-head">
+          <view>调休账户</view>
+          <view class="leave-available">选中日期前可用 {{selectedAvailableLeave}} 天</view>
+        </view>
+        <view class="leave-tabs">
+          <view class="leave-tab {{selectedRecord.type === 'bank' ? 'active bank' : ''}}" role="button" data-type="bank" bindtap="setSelectedType">
+            <view class="leave-action-sign">+</view>
+            <view>
+              <text class="leave-action-title">攒假</text>
+              <text class="leave-action-note">休息日上班，存 1 天</text>
+            </view>
+          </view>
+          <view class="leave-tab {{selectedRecord.type === 'comp' ? 'active comp' : ''}}" role="button" data-type="comp" bindtap="setSelectedType">
+            <view class="leave-action-sign">−</view>
+            <view>
+              <text class="leave-action-title">用调休</text>
+              <text class="leave-action-note">今天休息，扣 1 天</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
       <view class="work-duration" wx:if="{{selectedRecord.type === 'work'}}">
         <text class="setting-label">上班时长</text>
         <view class="duration-tabs">
@@ -130,7 +160,7 @@
   </block>
   <view class="editor empty-editor" wx:if="{{!selectedDate}}">
     <view class="empty-title">选择日期</view>
-    <view class="empty-subtitle">记录上班、半天班或带薪假</view>
+    <view class="empty-subtitle">记录上班、带薪假、攒假或使用调休</view>
   </view>
 
   <view class="summary-spacer"></view>

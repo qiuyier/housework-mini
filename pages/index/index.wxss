@@ -116,7 +116,7 @@
 
 .hero-stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 0;
   margin-top: 28rpx;
   padding-top: 22rpx;
@@ -125,7 +125,21 @@
 
 .stat-item {
   min-width: 0;
-  padding-right: 18rpx;
+  padding: 0 12rpx;
+  border-right: 1rpx solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-item:first-child {
+  padding-left: 0;
+}
+
+.stat-item:last-child {
+  padding-right: 0;
+  border-right: 0;
+}
+
+.stat-leave .stat-value {
+  color: #d7efcf;
 }
 
 .stat-value,
@@ -346,7 +360,9 @@
 }
 
 .day.work::after,
-.day.paid::after {
+.day.paid::after,
+.day.bank::after,
+.day.comp::after {
   position: absolute;
   top: 12rpx;
   left: 12rpx;
@@ -374,6 +390,30 @@
 
 .day.paid .day-tag {
   background: #b96c13;
+}
+
+.day.bank {
+  background: #edf6f5;
+}
+
+.day.bank::after {
+  background: #477a76;
+}
+
+.day.bank .day-tag {
+  background: #477a76;
+}
+
+.day.comp {
+  background: #f1f4f8;
+}
+
+.day.comp::after {
+  background: #596f89;
+}
+
+.day.comp .day-tag {
+  background: #596f89;
 }
 
 .day.off {
@@ -531,6 +571,106 @@
 
 .status-tab.active .status-mark {
   background: rgba(255, 255, 255, 0.78);
+}
+
+.leave-section {
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #e4ebe4;
+}
+
+.leave-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  color: #314036;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.leave-available {
+  color: #75827a;
+  font-size: 20rpx;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.leave-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12rpx;
+  margin-top: 14rpx;
+}
+
+.leave-tab {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  min-width: 0;
+  height: 88rpx;
+  padding: 0 16rpx;
+  border: 1rpx solid #d6dfd5;
+  border-radius: 14rpx;
+  color: #314036;
+  background: #f8faf7;
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.leave-tab:active {
+  transform: scale(0.97);
+}
+
+.leave-action-sign {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 42rpx;
+  width: 42rpx;
+  height: 42rpx;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 28rpx;
+  font-weight: 700;
+  background: #597773;
+}
+
+.leave-action-title,
+.leave-action-note {
+  display: block;
+  white-space: nowrap;
+}
+
+.leave-action-title {
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.leave-action-note {
+  margin-top: 3rpx;
+  color: #7a867e;
+  font-size: 18rpx;
+}
+
+.leave-tab.active.bank {
+  border-color: #477a76;
+  color: #ffffff;
+  background: #477a76;
+}
+
+.leave-tab.active.comp {
+  border-color: #596f89;
+  color: #ffffff;
+  background: #596f89;
+}
+
+.leave-tab.active .leave-action-sign {
+  color: #314036;
+  background: rgba(255, 255, 255, 0.84);
+}
+
+.leave-tab.active .leave-action-note {
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .work-duration,

@@ -26,6 +26,10 @@ Page({
     workProgressLabel: '满勤规则未设置',
     workDays: 0,
     paidDays: 0,
+    bankedDays: 0,
+    compDays: 0,
+    leaveBalance: '0',
+    selectedAvailableLeave: '0',
     state: {
       dailySalary: '',
       months: {},
@@ -180,7 +184,8 @@ Page({
       selectedDate,
       selectedDateLabel: this.formatDateLabel(selectedDate),
       selectedRecord: record,
-      selectedAmountLabel: this.getDayAmountLabel(record)
+      selectedAmountLabel: this.getDayAmountLabel(record),
+      selectedAvailableLeave: this.formatMoney(this.getLeaveBalanceBefore(selectedDate))
     })
   },
 
@@ -192,11 +197,15 @@ Page({
       return
     }
 
-    const nextRecord = type === 'work'
-      ? { type: 'work', multiplier: this.getWorkMultiplier(this.data.selectedRecord) }
-      : type === 'paid'
-        ? { type: 'paid', multiplier: this.getPaidMultiplier(this.data.selectedRecord) }
-        : { ...DEFAULT_RECORD }
+    let nextRecord = { ...DEFAULT_RECORD }
+
+    if (type === 'work') {
+      nextRecord = { type: 'work', multiplier: this.getWorkMultiplier(this.data.selectedRecord) }
+    } else if (type === 'paid') {
+      nextRecord = { type: 'paid', multiplier: this.getPaidMultiplier(this.data.selectedRecord) }
+    } else if (type === 'bank' || type === 'comp') {
+      nextRecord = { type, multiplier: '1' }
+    }
 
     this.upsertRecord(selectedDate, nextRecord)
   },
@@ -245,12 +254,22 @@ Page({
     const monthRecords = {
       ...(nextState.months[monthKey] || {})
     }
+    const previousRecord = monthRecords[date]
 
     monthRecords[date] = {
       type: record.type,
       multiplier: this.normalizeNumber(record.multiplier)
     }
     nextState.months[monthKey] = monthRecords
+
+    if (!this.hasValidLeaveLedger(nextState)) {
+      const message = previousRecord && previousRecord.type === 'bank'
+        ? '这天攒的假已被后续调休使用'
+        : '调休余额不足，请先选择一天“攒假”'
+
+      this.showToast(message)
+      return
+    }
 
     this.saveState(nextState)
     this.refreshMonth(date)
@@ -265,6 +284,11 @@ Page({
 
     delete monthRecords[date]
     nextState.months[monthKey] = monthRecords
+
+    if (!this.hasValidLeaveLedger(nextState)) {
+      this.showToast('这天攒的假已被后续调休使用')
+      return
+    }
 
     this.saveState(nextState)
     this.refreshMonth(date)
@@ -290,10 +314,16 @@ Page({
       expectedWorkDays: monthRule.expectedWorkDays,
       fullMonthSalary: monthRule.fullMonthSalary,
       summaryModeLabel: totals.modeLabel,
-      workProgressPercent: this.getWorkProgressPercent(totals.workDays, monthRule.expectedWorkDays),
-      workProgressLabel: this.getWorkProgressLabel(totals.workDays, monthRule),
+      workProgressPercent: this.getWorkProgressPercent(totals.attendanceDays, monthRule.expectedWorkDays),
+      workProgressLabel: this.getWorkProgressLabel(totals.attendanceDays, monthRule),
       workDays: totals.workDays,
-      paidDays: totals.paidDays
+      paidDays: totals.paidDays,
+      bankedDays: totals.bankedDays,
+      compDays: totals.compDays,
+      leaveBalance: this.formatMoney(this.getLeaveBalanceUntil(`${monthKey}-31`)),
+      selectedAvailableLeave: selectedDate
+        ? this.formatMoney(this.getLeaveBalanceBefore(selectedDate))
+        : '0'
     })
   },
 
@@ -331,20 +361,29 @@ Page({
         return total
       }
 
-      const paidAmount = day.record.type === 'paid' ? this.calculateRecordAmount(day.record) : 0
-      const workUnit = day.record.type === 'work' ? Number(day.record.multiplier) || 1 : 0
+      const recordType = day.record.type
+      const paidAmount = recordType === 'paid' ? this.calculateRecordAmount(day.record) : 0
+      const regularWorkUnit = recordType === 'work' ? Number(day.record.multiplier) || 1 : 0
+      const bankedUnit = recordType === 'bank' ? 1 : 0
+      const compUnit = recordType === 'comp' ? 1 : 0
 
       return {
         dailyAmount: total.dailyAmount + this.calculateRecordAmount(day.record),
         paidAmount: total.paidAmount + paidAmount,
-        workDays: total.workDays + workUnit,
-        paidDays: total.paidDays + (day.record.type === 'paid' ? 1 : 0)
+        workDays: total.workDays + regularWorkUnit + bankedUnit,
+        attendanceDays: total.attendanceDays + regularWorkUnit + compUnit,
+        paidDays: total.paidDays + (recordType === 'paid' ? 1 : 0),
+        bankedDays: total.bankedDays + bankedUnit,
+        compDays: total.compDays + compUnit
       }
     }, {
       dailyAmount: 0,
       paidAmount: 0,
       workDays: 0,
-      paidDays: 0
+      attendanceDays: 0,
+      paidDays: 0,
+      bankedDays: 0,
+      compDays: 0
     })
 
     const monthRule = this.getMonthRule(monthKey)
@@ -361,7 +400,7 @@ Page({
     const dailySalary = Number(this.data.dailySalary) || 0
     const expectedWorkDays = Number(monthRule.expectedWorkDays)
     const fullMonthSalary = Number(monthRule.fullMonthSalary)
-    const workBaseAmount = fullMonthSalary + ((totals.workDays - expectedWorkDays) * dailySalary)
+    const workBaseAmount = fullMonthSalary + ((totals.attendanceDays - expectedWorkDays) * dailySalary)
 
     return {
       ...totals,
@@ -380,6 +419,10 @@ Page({
 
     if (record.type === 'paid') {
       return dailySalary * multiplier
+    }
+
+    if (record.type === 'comp') {
+      return dailySalary
     }
 
     return 0
@@ -418,11 +461,77 @@ Page({
       return `${record.multiplier || 0}薪`
     }
 
+    if (record.type === 'bank') {
+      return '攒'
+    }
+
+    if (record.type === 'comp') {
+      return '调'
+    }
+
     return ''
   },
 
   getDayAmountLabel(record) {
+    if (record.type === 'bank') {
+      return '不额外计薪 · 调休 +1 天'
+    }
+
+    if (record.type === 'comp') {
+      return '按 1 天计薪 · 调休 -1 天'
+    }
+
     return `当天工资 ¥${this.formatMoney(this.calculateRecordAmount(record))}`
+  },
+
+  getLeaveEntries(state = this.data.state) {
+    const entries = []
+
+    Object.keys(state.months || {}).forEach((monthKey) => {
+      const monthRecords = state.months[monthKey] || {}
+
+      Object.keys(monthRecords).forEach((date) => {
+        const record = monthRecords[date]
+
+        if (record.type === 'bank' || record.type === 'comp') {
+          entries.push({
+            date,
+            change: record.type === 'bank' ? 1 : -1
+          })
+        }
+      })
+    })
+
+    return entries.sort((left, right) => left.date.localeCompare(right.date))
+  },
+
+  getLeaveBalanceUntil(dateText, state = this.data.state, includeDate = true) {
+    return this.getLeaveEntries(state).reduce((balance, entry) => {
+      const isInRange = includeDate ? entry.date <= dateText : entry.date < dateText
+      return isInRange ? balance + entry.change : balance
+    }, 0)
+  },
+
+  getLeaveBalanceBefore(dateText, state = this.data.state) {
+    return this.getLeaveBalanceUntil(dateText, state, false)
+  },
+
+  hasValidLeaveLedger(state) {
+    let balance = 0
+
+    return this.getLeaveEntries(state).every((entry) => {
+      balance += entry.change
+      return balance >= 0
+    })
+  },
+
+  showToast(title) {
+    if (wx.showToast) {
+      wx.showToast({
+        title,
+        icon: 'none'
+      })
+    }
   },
 
   getWorkProgressPercent(workDays, expectedWorkDays) {
@@ -458,6 +567,10 @@ Page({
   getNormalizedRecordMultiplier(record) {
     if (record.type === 'work') {
       return this.getWorkMultiplier(record)
+    }
+
+    if (record.type === 'bank' || record.type === 'comp') {
+      return '1'
     }
 
     return this.normalizeNumber(record.multiplier)
